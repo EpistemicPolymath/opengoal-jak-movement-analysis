@@ -1966,14 +1966,14 @@
               (when (and (logtest? s3-1 3) (-> s4-3 vis-info (+ s2-1 1)))
                 (let
                   ((v1-88 (lookup-level-info (-> s4-3 vis-info (+ s2-1 1) from-level))))
-                  (format
-                    *stdcon*
-                    "  ~A -> ~A: load: ~A  display: ~A~%"
+                 ; (format
+                   ; *stdcon*
+                   ; "  ~A -> ~A: load: ~A  display: ~A~%"
                     (-> s4-3 name)
                     (-> v1-88 name)
                     (logtest? s3-1 1)
                     (logtest? s3-1 2)
-                    )
+                    ;)
                   )
                 )
               (set! s3-1 (shr s3-1 2))
@@ -1996,11 +1996,11 @@
                    (not (-> s4-4 inside-boxes?))                     ;; but not in A
                    )
           (if (and (= *cheat-mode* 'debug) (-> s4-4 other inside-boxes?))
-              (format
-                *stdcon*
-                "~3LForcing outside of ~A [bad split boxes]~%~0L"
-                (-> s4-4 other name)
-                )
+             ;; (format
+               ;; *stdcon*
+               ;; "~3LForcing outside of ~A [bad split boxes]~%~0L"
+               (-> s4-4 other name)
+               ;; )
               )
           (set! (-> s4-4 other inside-boxes?) #f)
           )
@@ -2014,7 +2014,8 @@
     ((not (or (-> obj level0 inside-boxes?) (-> obj level1 inside-boxes?)))
      (when (or (-> obj level0 vis-info 0) (-> obj level1 vis-info 0))
        (if (= *cheat-mode* 'debug)
-           (format *stdcon* "~3Loutside of bsp~%~0L")
+          ;; (format *stdcon* "~3Loutside of bsp~%~0L")
+          (none)
            )
        )
      )
