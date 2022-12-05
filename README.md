@@ -14,31 +14,31 @@ I have dyscalculia, so being able to have something drawn in addition to the mat
 ### 12/04/2022
 
 #### Learned GoalC Commands
-(li) - connects the compiler to the running game
-(reload) - restarts it (updates it)
-(mi) - Builds all of the code in the game
+- (li) - connects the compiler to the running game
+- (reload) - restarts it (updates it)
+- (mi) - Builds all of the code in the game
 
 #### Formatting and Syntax
-(inspect *game-info*)
-(inspect *target*)
-(-> *game-info* money)
-(_function_)
-*object*
-(define _variables_ value)
+- (inspect *game-info*)
+- (inspect *target*)
+- (-> *game-info* money)
+- (_function_)
+- *object*
+- (define _variables_ value)
 
 #### Useful variables
 Jak's Location in XYZ
-(inspect (->(-> *target* root)trans))
-(inspect (->(-> *target* root)trans x))
-(inspect (->(-> *target* root)trans y))
-(inspect (->(-> *target* root)trans z))
+- (inspect (->(-> *target* root)trans))
+- (inspect (->(-> *target* root)trans x))
+- (inspect (->(-> *target* root)trans y))
+- (inspect (->(-> *target* root)trans z))
 
 (meters 1.0) (Distance value to compare from)
 
 Code Blocks
- (_set_! (-> *game-info* money) 32.0 )
-(set! (-> *game-info* fuel) (+ (-> *game-info* fuel) 1.0) )
-(inspect (->(-> *target* root)trans))
+- (_set_! (-> *game-info* money) 32.0 )
+- (set! (-> *game-info* fuel) (+ (-> *game-info* fuel) 1.0) )
+- (inspect (->(-> *target* root)trans))
 
 ### Outside Resources I am reviewing 
 
