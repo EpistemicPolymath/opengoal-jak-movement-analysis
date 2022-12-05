@@ -14,7 +14,7 @@ I have dyscalculia, so being able to have something drawn in addition to the mat
 ### 12/04/2022
 
 #### Learned GoalC Commands
-- (li) - connects the compiler to the running game
+- (lt) - connects the compiler to the running game
 - (reload) - restarts it (updates it)
 - (mi) - Builds all of the code in the game
 
