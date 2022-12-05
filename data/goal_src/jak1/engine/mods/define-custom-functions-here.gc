@@ -36,11 +36,40 @@ if the result of rand-vu-int-range is 1, then DANCE! if it is not 1, then Don't 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Define Custom Variables to use in mods
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define jakXPosition 0.0)
+(define jakYPosition 0.0)
+(define jakZPosition 0.0)
+
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Define Custom Functions to call in mods
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define jakPositionVector (new 'static 'vector :x 0.0 :y 0.0 :z 0.0))
+
+(defun update-jak-position ()
+ ;; Body of function
+  (set! jakXPosition (/ (->(-> *target* root)trans x) 4096.0))
+  (set! jakYPosition (/ (->(-> *target* root)trans y) 4096.0))
+  (set! jakZPosition (/ (->(-> *target* root)trans z) 4096.0))
+  (set! (-> jakPositionVector x) jakXPosition)
+  (set! (-> jakPositionVector y) jakYPosition)
+  (set! (-> jakPositionVector z) jakZPosition)
+  (none)
+) 
+
+(defun draw-position-string ()
+  (format *stdcon* "Jaks X Position: ~F~%Jaks Y Position: ~F~%Jaks Z Position: ~F~%" jakXPosition jakYPosition jakZPosition)
+  (none)
+)
+
+(defun draw-line ()
+ ;;(add-debug-line #t (bucket-id debug-no-zbuf) jakPositionVector (new 'static 'vector :x 0.0 :y 0.0 :z 0.0) (new 'static 'rgba :r #xff :a #x80) #f (the-as rgba -1)) 
+  (add-debug-sphere #t (bucket-id debug) jakPositionVector (meters 0.5) (new 'static 'rgba :r #x80))
+  (none)
+)
 
 ;; add your own unique custom functions here!
 
