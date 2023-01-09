@@ -40,6 +40,26 @@ Code Blocks
 - (set! (-> *game-info* fuel) (+ (-> *game-info* fuel) 1.0) )
 - (inspect (->(-> *target* root)trans))
 
+### 1/9/2023
+
+I am starting up working on this project again. I have contacted Barg to see if he can help with the project. I have explored the code for Barg's suggestion of "Camera Master Marks." This feature does seem to be something I can manipulate to bring my mod idea into reality, especially in addition to what I found with Zed. I will try to save all file locations where I can better explore the usage of the "master marks" in the OpenGOAL code base.
+
+#### Useful Functions and Files:
+
+- *display-cam-master-marks* ;data\goal_src\jak1\engine\camera\cam-debug.gc
+- (define-extern *display-cam-master-marks* symbol) ;data\decompiler\config\all-types.gc
+- (define *display-cam-master-marks* #f) ; data\goal_src\jak1\engine\game\main-h.gc
+
+Function of interest:
+```
+ (if *display-cam-master-marks*
+    (debug-draw-spline (-> arg0 target-spline))
+  )
+```
+
+Seems I might be able to use (debug-draw-spline) and attach it to the target (Jak) target-spline. With some mofications I can potentially add distance calculations (with the information I found with Zed) and adjust the visuals of these marks for easy viewing and comparison and call it something else altogether even. 
+I will dive more into these functions and how they work and maybe get an answer.
+
 ### Outside Resources I am reviewing 
 
 
