@@ -711,11 +711,6 @@
         (make-current-level-available-to-progress)
         (update-task-hints)
         (load-level-text-files -1)
-    
-
-
-  
-      
 
         (add-ee-profile-frame 'unknown-cpu-time)
         ;; collect perf stats
@@ -939,7 +934,6 @@
 
       (set! (-> *time-of-day-context* title-updated) #f)
       (set! *teleport* #f)
-   
       (when (nonzero? *teleport-count*)
         (set! *teleport* #t)
         (set! *teleport-count* (+ *teleport-count* -1))
@@ -966,10 +960,9 @@
            )
          )
 
-      
+
       ;; suspend
       (suspend)
-
       )
     )
 

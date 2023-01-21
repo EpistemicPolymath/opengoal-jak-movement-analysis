@@ -8,33 +8,9 @@
 ;; DECOMP BEGINS
 
 (defmethod compute-trans-at-time trajectory ((obj trajectory) (arg0 float) (arg1 vector))
-  (rlet ((acc :class vf)
-         (vf0 :class vf)
-         (vf1 :class vf)
-         (vf2 :class vf)
-         (vf3 :class vf)
-         (vf4 :class vf)
-         )
-    (init-vf0-vector)
-    (let ((v1-0 arg1))
-      (let ((a3-0 (-> obj initial-position))
-            (t0-0 (-> obj initial-velocity))
-            (f0-0 arg0)
-            )
-        (.lvf vf2 (&-> t0-0 quad))
-        (.lvf vf1 (&-> a3-0 quad))
-        (let ((a3-1 f0-0))
-          (.mov vf3 a3-1)
-          )
-        )
-      (.add.x.vf vf4 vf0 vf0 :mask #b1000)
-      (.mul.x.vf acc vf2 vf3)
-      (.add.mul.w.vf vf4 vf1 vf0 acc :mask #b111)
-      (.svf (&-> v1-0 quad) vf4)
-      )
-    (+! (-> arg1 y) (* 0.5 arg0 arg0 (-> obj gravity)))
-    arg1
-    )
+  (vector+float*! arg1 (-> obj initial-position) (-> obj initial-velocity) arg0)
+  (+! (-> arg1 y) (* 0.5 arg0 arg0 (-> obj gravity)))
+  arg1
   )
 
 (defmethod compute-transv-at-time trajectory ((obj trajectory) (arg0 float) (arg1 vector))
@@ -47,7 +23,6 @@
   (/ (- (-> obj initial-velocity y)) (-> obj gravity))
   )
 
-;; WARN: Return type mismatch int vs none.
 (defmethod setup-from-to-duration! trajectory ((obj trajectory) (arg0 vector) (arg1 vector) (arg2 float) (arg3 float))
   (set! (-> obj initial-position quad) (-> arg0 quad))
   (set! (-> obj gravity) arg3)
@@ -61,7 +36,6 @@
   (none)
   )
 
-;; WARN: Return type mismatch int vs none.
 (defmethod setup-from-to-xz-vel! trajectory ((obj trajectory) (arg0 vector) (arg1 vector) (arg2 float) (arg3 float))
   (let ((f0-1 (/ (vector-vector-xz-distance arg1 arg0) arg2)))
     (setup-from-to-duration! obj arg0 arg1 f0-1 arg3)
@@ -70,7 +44,6 @@
   (none)
   )
 
-;; WARN: Return type mismatch int vs none.
 (defmethod setup-from-to-y-vel! trajectory ((obj trajectory) (arg0 vector) (arg1 vector) (arg2 float) (arg3 float))
   (let* ((f0-0 arg2)
          (f1-3 (- (* f0-0 f0-0) (* 2.0 (- (-> arg0 y) (-> arg1 y)) arg3)))
@@ -87,7 +60,6 @@
   (none)
   )
 
-;; WARN: Return type mismatch int vs none.
 (defmethod setup-from-to-height! trajectory ((obj trajectory) (arg0 vector) (arg1 vector) (arg2 float) (arg3 float))
   (let* ((f0-1 (+ arg2 (fmax (-> arg0 y) (-> arg1 y))))
          (f1-4 (* 2.0 (- (-> arg0 y) f0-1) arg3))
@@ -102,7 +74,6 @@
   (none)
   )
 
-;; WARN: Return type mismatch int vs none.
 ;; WARN: Function (method 16 trajectory) has a return type of none, but the expression builder found a return statement.
 (defmethod setup-from-to-duration-and-height! trajectory ((obj trajectory) (arg0 vector) (arg1 vector) (arg2 float) (arg3 float))
   (let ((f0-1 (- (-> arg1 y) (-> arg0 y))))
@@ -136,7 +107,6 @@
   (none)
   )
 
-;; WARN: Return type mismatch int vs none.
 (defmethod debug-draw trajectory ((obj trajectory))
   (let ((s5-0 (new 'stack-no-clear 'vector))
         (s4-0 (new 'stack-no-clear 'vector))
@@ -148,7 +118,15 @@
       (let ((f0-1 (* (-> obj time) (/ (+ 1.0 (the float s2-0)) (the float s3-0)))))
         (compute-trans-at-time obj f0-1 s4-0)
         )
-      (add-debug-line #t (bucket-id bucket-318) s5-0 s4-0 (new 'static 'rgba :r #xff :a #x80) #f (the-as rgba -1))
+      (add-debug-line
+        #t
+        (bucket-id debug-no-zbuf1)
+        s5-0
+        s4-0
+        (new 'static 'rgba :r #xff :a #x80)
+        #f
+        (the-as rgba -1)
+        )
       )
     )
   0
@@ -166,7 +144,6 @@
   obj
   )
 
-;; WARN: Return type mismatch int vs none.
 (defmethod update-from-cspace impact-control ((obj impact-control))
   (when (>= (-> obj joint) 0)
     (set! (-> obj trans 1 quad) (-> obj trans 0 quad))
@@ -185,7 +162,7 @@
         )
     (set! (-> a0-6 radius) (-> obj radius))
     (set! (-> a0-6 collide-with) (-> obj collide-with))
-    (set! (-> a0-6 ignore-process0) (the-as process v1-2))
+    (set! (-> a0-6 ignore-process0) v1-2)
     (set! (-> a0-6 ignore-process1) #f)
     (set! (-> a0-6 ignore-pat) arg2)
     (set! (-> a0-6 action-mask) (collide-action solid))
@@ -231,43 +208,20 @@
   )
 
 (defmethod point-tracker-method-10 point-tracker ((obj point-tracker) (arg0 vector) (arg1 vector) (arg2 vector) (arg3 float))
-  (rlet ((acc :class vf)
-         (vf0 :class vf)
-         (vf1 :class vf)
-         (vf2 :class vf)
-         (vf3 :class vf)
-         (vf4 :class vf)
-         )
-    (init-vf0-vector)
-    (cond
-      ((>= 0.0 arg3)
-       (set! (-> arg0 quad) (-> arg1 quad))
-       )
-      ((>= arg3 1.0)
-       (set! (-> arg0 quad) (-> arg2 quad))
-       )
-      (else
-        (let ((a1-1 arg0))
-          (let ((v1-3 arg2)
-                (a0-6 (vector-! (new 'stack-no-clear 'vector) arg1 arg2))
-                (f0-3 (- 1.0 arg3))
-                )
-            (.lvf vf2 (&-> a0-6 quad))
-            (.lvf vf1 (&-> v1-3 quad))
-            (let ((v1-4 f0-3))
-              (.mov vf3 v1-4)
-              )
-            )
-          (.add.x.vf vf4 vf0 vf0 :mask #b1000)
-          (.mul.x.vf acc vf2 vf3)
-          (.add.mul.w.vf vf4 vf1 vf0 acc :mask #b111)
-          (.svf (&-> a1-1 quad) vf4)
-          (vector-lerp! arg0 a1-1 arg2 arg3)
-          )
+  (cond
+    ((>= 0.0 arg3)
+     (set! (-> arg0 quad) (-> arg1 quad))
+     )
+    ((>= arg3 1.0)
+     (set! (-> arg0 quad) (-> arg2 quad))
+     )
+    (else
+      (let ((a1-2 (vector+float*! arg0 arg2 (vector-! (new 'stack-no-clear 'vector) arg1 arg2) (- 1.0 arg3))))
+        (vector-lerp! arg0 a1-2 arg2 arg3)
         )
       )
-    arg0
     )
+  arg0
   )
 
 (defmethod point-tracker-method-11 point-tracker ((obj point-tracker) (arg0 vector) (arg1 vector) (arg2 vector) (arg3 float))
@@ -280,13 +234,12 @@
     )
   )
 
-;; WARN: Return type mismatch basic vs none.
 (defmethod combo-tracker-method-13 combo-tracker ((obj combo-tracker) (arg0 handle) (arg1 vector) (arg2 float) (arg3 vector) (arg4 float))
   (cond
     ((send-event (handle->process arg0) 'combo)
      (let ((gp-1 (handle->process arg0)))
        (if (type? gp-1 process-focusable)
-           (empty)
+           gp-1
            )
        )
      )
@@ -301,20 +254,21 @@
                   )
             )
         (sphere<-vector+r! s1-0 arg1 arg2)
-        (let ((t9-4 (method-of-object *actor-hash* spatial-hash-method-36)))
-          (-> s2-1 data)
-          (-> s2-1 allocated-length)
-          (set! (-> s2-1 length) (the-as int (t9-4)))
-          )
+        (set! (-> s2-1 length) (fill-actor-list-for-sphere
+                                 *actor-hash*
+                                 s1-0
+                                 (the-as (pointer collide-shape) (-> s2-1 data))
+                                 (-> s2-1 allocated-length)
+                                 )
+              )
         (let ((gp-2 (find-nearest-focusable
                       (the-as (array collide-shape) s2-1)
                       arg1
                       arg2
-                      (the-as search-info-flag (if (= arg4 65536.0)
-                                                   515
-                                                   595
-                                                   )
-                              )
+                      (if (= arg4 65536.0)
+                          (search-info-flag crate enemy combo)
+                          (search-info-flag crate enemy prefer-angle cull-angle combo)
+                          )
                       (search-info-flag)
                       arg3
                       (the-as vector #f)
@@ -323,13 +277,12 @@
                     )
               )
           (if (type? gp-2 process-focusable)
-              (empty)
+              gp-2
               )
           )
         )
       )
     )
-  (none)
   )
 
 (defmethod combo-tracker-method-12 combo-tracker ((obj combo-tracker) (arg0 vector) (arg1 vector) (arg2 process) (arg3 time-frame))
@@ -361,9 +314,17 @@
                      )
                )
           (when s4-1
-            (let ((a2-3 ((method-of-type nav-control nav-control-method-11) (the-as nav-control s4-1) arg1)))
+            (let ((a2-3 ((method-of-type nav-control find-poly-containing-point-1) (the-as nav-control s4-1) arg1)))
               (if a2-3
-                  ((method-of-type nav-control nav-control-method-20) (the-as nav-control s4-1) arg1 a2-3 arg0 #x45000000 #f #f)
+                  ((method-of-type nav-control clamp-vector-to-mesh-cross-gaps)
+                   (the-as nav-control s4-1)
+                   arg1
+                   a2-3
+                   arg0
+                   2048.0
+                   #f
+                   (the-as clamp-travel-vector-to-mesh-return-info #f)
+                   )
                   (set! (-> arg0 quad) (the-as uint128 0))
                   )
               )
@@ -437,7 +398,6 @@
     )
   )
 
-;; WARN: Return type mismatch int vs none.
 (defmethod cubic-curve-method-9 cubic-curve ((obj cubic-curve) (arg0 vector) (arg1 vector) (arg2 vector) (arg3 vector))
   (rlet ((acc :class vf)
          (vf0 :class vf)
@@ -447,7 +407,7 @@
          (vf7 :class vf)
          )
     (init-vf0-vector)
-    (set! (-> obj mat vector 0 quad) (-> arg0 quad))
+    (set! (-> obj mat quad 0) (-> arg0 quad))
     (set! (-> obj mat vector 1 quad) (-> arg1 quad))
     (let ((v1-2 (new 'stack-no-clear 'trajectory)))
       (vector-! (-> v1-2 initial-velocity) arg2 arg0)
@@ -511,22 +471,21 @@
   arg0
   )
 
-;; WARN: Return type mismatch int vs none.
 (defmethod debug-draw-curve cubic-curve ((obj cubic-curve))
   (let ((s5-0 (new 'stack-no-clear 'trajectory))
         (s4-0 10)
         )
     (cubic-curve-method-10 obj (-> s5-0 initial-velocity) 0.0)
-    (add-debug-x #t (bucket-id bucket-318) (-> s5-0 initial-velocity) *color-red*)
+    (add-debug-x #t (bucket-id debug-no-zbuf1) (-> s5-0 initial-velocity) *color-red*)
     (dotimes (s3-0 s4-0)
       (set! (-> s5-0 initial-position quad) (-> s5-0 initial-velocity quad))
       (let ((f0-2 (/ (+ 1.0 (the float s3-0)) (the float s4-0))))
         (cubic-curve-method-10 obj (-> s5-0 initial-velocity) f0-2)
         )
-      (add-debug-x #t (bucket-id bucket-318) (-> s5-0 initial-velocity) *color-red*)
+      (add-debug-x #t (bucket-id debug-no-zbuf1) (-> s5-0 initial-velocity) *color-red*)
       (add-debug-line
         #t
-        (bucket-id bucket-318)
+        (bucket-id debug-no-zbuf1)
         (-> s5-0 initial-position)
         (-> s5-0 initial-velocity)
         *color-red*
@@ -538,7 +497,3 @@
   0
   (none)
   )
-
-
-
-

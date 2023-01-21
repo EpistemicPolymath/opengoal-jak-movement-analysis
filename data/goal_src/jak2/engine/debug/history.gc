@@ -107,6 +107,7 @@
   :flag-assert         #x900000030
   )
 
+
 (deftype history-iterator (basic)
   ((max-age      uint32   :offset-assert   4)
    (owner        uint8    :offset-assert   8)
@@ -123,9 +124,10 @@
     (new (symbol type uint) _type_ 0)
     (frame-counter-delta (_type_ history-elt) time-frame 9)
     (update-entries! (_type_) history-elt 10)
-    (history-iterator-method-11 (_type_ history-elt) float 11)
+    (get-age (_type_ history-elt) float 11)
     )
   )
+
 
 (deftype history (basic)
   ((alloc-index      int32                        :offset-assert   4)
@@ -142,10 +144,12 @@
     )
   )
 
+
 (defmethod length history ((obj history))
   (-> obj allocated-length)
   )
 
+;; WARN: Return type mismatch uint vs int.
 (defmethod asize-of history ((obj history))
   (the-as int (+ (-> obj type size) (* 48 (-> obj allocated-length))))
   )
@@ -159,9 +163,9 @@
 
 (defmethod clear-history-entries! history ((obj history))
   "Iterates through each [[history-elt]] in the `elt` dynamic array
-       For each entry:
-       - clear `timestamp`
-       - clear `record-tag`"
+For each entry:
+- clear `timestamp`
+- clear `record-tag`"
   (set! (-> obj alloc-index) 0)
   (countdown (v1-0 (-> obj allocated-length))
     (let ((a1-3 (-> obj elts v1-0)))
@@ -181,10 +185,10 @@
 ;; WARN: new jak 2 until loop case, check carefully
 (defmethod clear-record-tags! history ((obj history) (arg0 history-channel) (arg1 uint) (arg2 uint))
   "First grab the latest [[history-elt]] at `alloc-index`
-       1. update it's `channel`, `record-id` and `owner` from the provided args
-       2. - if it's `record-tag` is zero -- return it
-           - otherwise, iterate through all `elts` until one is found that does not match it's `timestamp`
-             - if not `0` out the `record-tag` for that elt and continue iteration"
+1. update it's `channel`, `record-id` and `owner` from the provided args
+2. - if it's `record-tag` is zero -- return it
+- otherwise, iterate through all `elts` until one is found that does not match it's `timestamp`
+- if not `0` out the `record-tag` for that elt and continue iteration"
   (let* ((t1-0 (-> obj alloc-index))
          (v1-0 (-> obj elts))
          (v0-0 (-> v1-0 t1-0))
@@ -233,9 +237,9 @@
 
 (defmethod update-entries! history-iterator ((obj history-iterator))
   "Iterate through each [[history-elt]] in [[*history*]]
-      - If we hit the end set `done?` to true
-      - If the `timestamp` on the elt, minus the current framecounter exceeds `max-age`, we are also done, return #f
-      - However if we find an elt who's `owner` matches the iterator's, break out early returning that `elt`"
+- If we hit the end set `done?` to true
+- If the `timestamp` on the elt, minus the current framecounter exceeds `max-age`, we are also done, return #f
+- However if we find an elt who's `owner` matches the iterator's, break out early returning that `elt`"
   (let ((v1-0 *history*)
         (a1-2 (-> *display* base-clock frame-counter))
         )
@@ -265,9 +269,8 @@
   (the-as history-elt #f)
   )
 
-(defmethod history-iterator-method-11 history-iterator ((obj history-iterator) (arg0 history-elt))
-  "TODO - Unsure of the purpose
-      `min(1.0, ((history-elt.timestamp - 1) + frame-counter) / (max-age + 1)) - 1.0`"
+(defmethod get-age history-iterator ((obj history-iterator) (arg0 history-elt))
+  "Get the age of a history element"
   (- 1.0 (fmin 1.0 (/ (the float (+ (- 1 (-> arg0 timestamp)) (-> *display* base-clock frame-counter)))
                       (the float (+ (-> obj max-age) 1))
                       )
@@ -280,6 +283,7 @@
   (- (-> *display* base-clock frame-counter) (-> arg0 timestamp))
   )
 
+;; WARN: new jak 2 until loop case, check carefully
 (defun history-print ((arg0 history-iterator))
   (local-vars
     (sv-16 object)
@@ -434,4 +438,127 @@
   0
   (none)
   )
+
+;; WARN: new jak 2 until loop case, check carefully
+(defun history-draw ((arg0 history-iterator))
+  (local-vars (sv-16 vector) (sv-20 vector) (sv-24 pat-surface))
+  (set! sv-16 (the-as vector #f))
+  (set! sv-20 (the-as vector #f))
+  (set! sv-24 (new 'static 'pat-surface))
+  (until #f
+    (let ((s5-0 (update-entries! arg0)))
+      (if (not s5-0)
+          (goto cfg-34)
+          )
+      (when (logtest? (-> arg0 channel-mask) (ash 1 (-> s5-0 channel)))
+        (let* ((f0-0 (get-age arg0 s5-0))
+               (v1-8 (the int (lerp 4.0 128.0 f0-0)))
+               )
+          (case (-> s5-0 channel)
+            (((history-channel trans))
+             (if sv-16
+                 (add-debug-line
+                   #t
+                   (bucket-id debug-no-zbuf1)
+                   sv-16
+                   (-> s5-0 vector)
+                   (the-as rgba (logior #xffff00 (shl v1-8 24)))
+                   #f
+                   (the-as rgba -1)
+                   )
+                 (add-debug-x #t (bucket-id debug-no-zbuf1) (-> s5-0 vector) (the-as rgba (logior #xffff00 (shl v1-8 24))))
+                 )
+             (set! sv-16 (-> s5-0 vector))
+             )
+            (((history-channel intersect))
+             (if sv-20
+                 (add-debug-line
+                   #t
+                   (bucket-id debug-no-zbuf1)
+                   sv-20
+                   (-> s5-0 vector)
+                   (the-as rgba (logior #xffffff (shl v1-8 24)))
+                   #f
+                   (the-as rgba -1)
+                   )
+                 (add-debug-x #t (bucket-id debug-no-zbuf1) (-> s5-0 vector) (the-as rgba (logior #xffffff (shl v1-8 24))))
+                 )
+             (set! sv-20 (-> s5-0 vector))
+             )
+            (((history-channel transv))
+             (add-debug-vector
+               #t
+               (bucket-id debug-no-zbuf1)
+               (-> s5-0 origin)
+               (-> s5-0 vector)
+               (meters 0.000024414063)
+               (the-as rgba (logior (shl v1-8 24) #xff00))
+               )
+             )
+            (((history-channel transv-in))
+             (add-debug-vector
+               #t
+               (bucket-id debug-no-zbuf1)
+               (-> s5-0 origin)
+               (-> s5-0 vector)
+               (meters 0.000024414063)
+               (the-as rgba (logior #x408040 (shl v1-8 24)))
+               )
+             )
+            (((history-channel transv-out))
+             (add-debug-vector
+               #t
+               (bucket-id debug-no-zbuf1)
+               (-> s5-0 origin)
+               (-> s5-0 vector)
+               (meters 0.000024414063)
+               (the-as rgba (logior #x404080 (shl v1-8 24)))
+               )
+             )
+            (((history-channel local-normal) (history-channel surface-normal))
+             (let ((t1-7
+                     (logand (the-as uint (-> *pat-mode-info* (-> sv-24 mode) hilite-color)) (the-as uint #xffffffff00ffffff))
+                     )
+                   )
+               (add-debug-vector
+                 #t
+                 (bucket-id debug-no-zbuf1)
+                 (-> s5-0 origin)
+                 (-> s5-0 vector)
+                 (meters 1)
+                 (the-as rgba (logior t1-7 (shl v1-8 24)))
+                 )
+               )
+             )
+            (((history-channel pat))
+             (set! sv-24 (the-as pat-surface (-> s5-0 vector x)))
+             )
+            (((history-channel friction))
+             (let ((f0-3 (-> s5-0 vector x))
+                   (a3-10 (new 'stack-no-clear 'vector))
+                   )
+               (set-vector! a3-10 0.0 (* -8192.0 f0-3) 0.0 1.0)
+               (add-debug-vector
+                 #t
+                 (bucket-id debug-no-zbuf1)
+                 (-> s5-0 origin)
+                 a3-10
+                 (meters 0.00024414062)
+                 (the-as rgba (logior #xffffff (shl v1-8 24)))
+                 )
+               )
+             )
+            )
+          )
+        )
+      )
+    )
+  #f
+  (label cfg-34)
+  0
+  (none)
+  )
+
+0
+
 )
