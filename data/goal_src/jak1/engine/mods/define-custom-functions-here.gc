@@ -36,10 +36,12 @@ if the result of rand-vu-int-range is 1, then DANCE! if it is not 1, then Don't 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Define Custom Variables to use in mods
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (define jakXPosition 0.0)
 (define jakYPosition 0.0)
 (define jakZPosition 0.0)
-
+;;(define-extern camera-master-debug (function camera-master none)) ;;
+;;(define tracking-spline);;
 
 
 
@@ -71,6 +73,11 @@ if the result of rand-vu-int-range is 1, then DANCE! if it is not 1, then Don't 
   (none)
 )
 
+;;(defun track-jak ( (arg0 camera-master) ) 
+  ;(debug-draw-spline (-> arg0 target-spline))
+  ;;(debug-draw-spline (-> target-spline))
+ ;; (none)
+;;)
 ;; add your own unique custom functions here!
 
 ;; Macros can be used more-or-less just like functions

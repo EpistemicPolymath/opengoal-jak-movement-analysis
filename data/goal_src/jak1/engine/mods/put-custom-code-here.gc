@@ -25,7 +25,7 @@
       ;;(increase-power-cell-by-one) This is a call to increase-power-cell-by-one defined in define-custom-functions-here.gc
       (update-jak-position ) ; function call
       (draw-position-string )
-      (draw-line )
+      ;;(track-jak )
       (none)
       )
 
