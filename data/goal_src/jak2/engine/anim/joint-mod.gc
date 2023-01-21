@@ -20,6 +20,7 @@
 
 ;; DECOMP BEGINS
 
+;; WARN: Return type mismatch matrix vs none.
 ;; WARN: Function joint-mod-ik-callback has a return type of none, but the expression builder found a return statement.
 ;; ERROR: Unsupported inline assembly instruction kind - [mula.s f0, f3]
 ;; ERROR: Unsupported inline assembly instruction kind - [madda.s f1, f4]
@@ -82,26 +83,26 @@
           )
         (let* ((a2-0 (-> gp-0 shoulder-matrix-no-ik))
                (a3-0 s5-0)
-               (v1-22 (-> a3-0 vector 0 quad))
-               (a0-7 (-> a3-0 vector 1 quad))
-               (a1-3 (-> a3-0 vector 2 quad))
+               (v1-22 (-> a3-0 quad 0))
+               (a0-7 (-> a3-0 quad 1))
+               (a1-3 (-> a3-0 quad 2))
                (a3-1 (-> a3-0 trans quad))
                )
-          (set! (-> a2-0 vector 0 quad) v1-22)
-          (set! (-> a2-0 vector 1 quad) a0-7)
-          (set! (-> a2-0 vector 2 quad) a1-3)
+          (set! (-> a2-0 quad 0) v1-22)
+          (set! (-> a2-0 quad 1) a0-7)
+          (set! (-> a2-0 quad 2) a1-3)
           (set! (-> a2-0 trans quad) a3-1)
           )
         (let* ((a2-1 (-> gp-0 elbow-matrix-no-ik))
                (a3-2 s4-1)
-               (v1-23 (-> a3-2 vector 0 quad))
-               (a0-8 (-> a3-2 vector 1 quad))
-               (a1-4 (-> a3-2 vector 2 quad))
+               (v1-23 (-> a3-2 quad 0))
+               (a0-8 (-> a3-2 quad 1))
+               (a1-4 (-> a3-2 quad 2))
                (a3-3 (-> a3-2 trans quad))
                )
-          (set! (-> a2-1 vector 0 quad) v1-23)
-          (set! (-> a2-1 vector 1 quad) a0-8)
-          (set! (-> a2-1 vector 2 quad) a1-4)
+          (set! (-> a2-1 quad 0) v1-23)
+          (set! (-> a2-1 quad 1) a0-8)
+          (set! (-> a2-1 quad 2) a1-4)
           (set! (-> a2-1 trans quad) a3-3)
           )
         (set! sv-752 (new 'stack-no-clear 'vector))
@@ -201,10 +202,7 @@
                         (vector-!
                           s3-1
                           s2-3
-                          (the-as
-                            vector
-                            (vector-float*! (new 'stack-no-clear 'vector) sv-832 (/ (vector-dot sv-832 s2-3) (vector-dot sv-832 sv-832)))
-                            )
+                          (vector-float*! (new 'stack-no-clear 'vector) sv-832 (/ (vector-dot sv-832 s2-3) (vector-dot sv-832 sv-832)))
                           )
                         )
                       )
@@ -239,8 +237,21 @@
                     (sv-800 sv-816 sv-848 a2-9)
                     )
                   (vector-orient-by-quat! s2-3 s2-3 s1-1)
-                  (let ((f0-26 (fabs (vector-dot (vector-normalize-copy! (new 'stack-no-clear 'vector) s2-3 1.0)
-                                                 (vector-normalize-copy! (new 'stack-no-clear 'vector) s0-1 1.0)))))
+                  (set! sv-864 (vector-normalize-copy! (new 'stack-no-clear 'vector) s2-3 1.0))
+                  (let* ((v1-76 (vector-normalize-copy! (new 'stack-no-clear 'vector) s0-1 1.0))
+                         (f0-23 (-> sv-864 x))
+                         (f1-16 (-> sv-864 y))
+                         (f2-6 (-> sv-864 z))
+                         (f3-5 (-> v1-76 x))
+                         (f4-0 (-> v1-76 y))
+                         (f5-0 (-> v1-76 z))
+                         )
+                    ; (.mula.s f0-23 f3-5)
+                    ; (.madda.s f1-16 f4-0)
+                    ; (.madd.s f0-24 f2-6 f5-0)
+                    (set! f0-24 (+ (* f0-23 f3-5) (* f1-16 f4-0) (* f2-6 f5-0)))
+                    )
+                  (let ((f0-26 (fabs f0-24)))
                     (if (< 0.98 f0-26)
                         (vector-orient-by-quat! s2-3 s3-1 s1-1)
                         )
@@ -275,10 +286,10 @@
                       (a2-21 (matrix-4x4-inverse! (new 'stack-no-clear 'matrix) s5-0))
                       (gp-2 (new 'stack-no-clear 'matrix))
                       )
-                  (set! (-> gp-2 vector 0 quad) (-> s5-0 trans quad))
+                  (set! (-> gp-2 quad 0) (-> s5-0 trans quad))
                   (matrix*! s4-1 s4-1 a2-21)
                   (matrix*! s5-0 s5-0 s3-2)
-                  (set! (-> s5-0 trans quad) (-> gp-2 vector 0 quad))
+                  (set! (-> s5-0 trans quad) (-> gp-2 quad 0))
                   )
                 )
               )
@@ -336,11 +347,7 @@
     (sv-168 vector)
     (sv-172 symbol)
     )
-  (rlet ((acc :class vf)
-         (vf0 :class vf)
-         (vf1 :class vf)
-         (vf2 :class vf)
-         (vf3 :class vf)
+  (rlet ((vf0 :class vf)
          (vf4 :class vf)
          (vf5 :class vf)
          (vf6 :class vf)
@@ -481,19 +488,9 @@
           )
         (set! (-> sv-16 trans x) (-> v1-97 y))
         (let ((f0-60 (* (-> sv-16 trans y) (-> sv-16 flex-blend))))
-          (when (!= f0-60 0.0)
-            (let ((a0-86 (-> s5-0 trans)))
-              (.lvf vf2 (&-> s4-1 quad))
-              (.lvf vf1 (&-> v1-97 quad))
-              (let ((v1-98 f0-60))
-                (.mov vf3 v1-98)
-                )
-              (.add.x.vf vf4 vf0 vf0 :mask #b1000)
-              (.mul.x.vf acc vf2 vf3)
-              (.add.mul.w.vf vf4 vf1 vf0 acc :mask #b111)
-              (.svf (&-> a0-86 quad) vf4)
+          (if (!= f0-60 0.0)
+              (vector+float*! (-> s5-0 trans) v1-97 s4-1 f0-60)
               )
-            )
           )
         )
       )
@@ -594,6 +591,7 @@
     )
   )
 
+;; WARN: Return type mismatch joint-mod vs none.
 (defmethod mode-set! joint-mod ((obj joint-mod) (arg0 joint-mod-mode))
   (set! (-> obj mode) arg0)
   (let ((v1-0 (-> obj joint)))
@@ -701,6 +699,7 @@
   (none)
   )
 
+;; WARN: Return type mismatch joint-mod vs none.
 (defmethod shut-down joint-mod ((obj joint-mod))
   (set! (-> obj shutting-down?) #t)
   (set! (-> obj blend) 0.0)
@@ -843,7 +842,19 @@
         (let ((s2-1 (vector-normalize! (vector-! (new 'stack-no-clear 'vector) (-> gp-0 target) s2-0) 1.0)))
           (set! sv-160 (-> gp-0 process node-list data (-> gp-0 base-joint) bone transform vector (-> gp-0 base-nose)))
           (set! sv-80 (the-as symbol #f))
-          (if (< (vector-dot sv-144 s0-0) 0.0)
+          (let ((f0-0 (-> sv-144 x))
+                (f1-0 (-> sv-144 y))
+                (f2-0 (-> sv-144 z))
+                (f3-0 (-> s0-0 x))
+                (f4-0 (-> s0-0 y))
+                (f5-0 (-> s0-0 z))
+                )
+            ; (.mula.s f0-0 f3-0)
+            ; (.madda.s f1-0 f4-0)
+            ; (.madd.s f0-1 f2-0 f5-0)
+            (set! f0-1 (+ (* f0-0 f3-0) (* f1-0 f4-0) (* f2-0 f5-0)))
+            )
+          (if (< f0-1 0.0)
               (set! sv-80 #t)
               )
           (let* ((f30-0 (vector-y-angle s3-0))
@@ -966,7 +977,7 @@
       (if (and (= (-> gp-0 process type) target) (!= (-> gp-0 blend) 0.0))
           (add-debug-text-sphere
             *display-target-marks*
-            (bucket-id bucket-318)
+            (bucket-id debug-no-zbuf1)
             (-> gp-0 target)
             (meters 0.2)
             "look"
@@ -979,6 +990,7 @@
     )
   )
 
+;; WARN: Return type mismatch symbol vs none.
 (defbehavior joint-mod-polar-look-at-guts process ((arg0 cspace) (arg1 transformq))
   (let ((gp-0 (the-as joint-mod (-> arg0 param1))))
     (cspace<-parented-transformq-joint! arg0 arg1)
@@ -1090,7 +1102,7 @@
     (if (and (= (-> gp-0 process type) target) (!= (-> gp-0 blend) 0.0))
         (add-debug-text-sphere
           *display-target-marks*
-          (bucket-id bucket-318)
+          (bucket-id debug-no-zbuf1)
           (-> gp-0 target)
           (meters 0.2)
           "look"
@@ -1202,7 +1214,7 @@
     (if (and (= (-> gp-0 process type) target) (!= (-> gp-0 blend) 0.0))
         (add-debug-text-sphere
           *display-target-marks*
-          (bucket-id bucket-318)
+          (bucket-id debug-no-zbuf1)
           (-> gp-0 target)
           (meters 0.2)
           "look"
@@ -1229,10 +1241,10 @@
                     )
                   )
             )
-        (if (zero? (logand (-> s5-0 track-mode) (track-mode no-trans)))
+        (if (not (logtest? (-> s5-0 track-mode) (track-mode no-trans)))
             (vector+! (-> arg1 trans) (-> arg1 trans) (-> s5-0 trans))
             )
-        (when (zero? (logand (-> s5-0 track-mode) (track-mode no-rotate)))
+        (when (not (logtest? (-> s5-0 track-mode) (track-mode no-rotate)))
           (let* ((v1-9 (-> s3-0 (-> s5-0 ear)))
                  (a1-4 (quaternion-axis-angle!
                          (new 'stack-no-clear 'quaternion)
@@ -1271,7 +1283,7 @@
             )
           )
         )
-      (when (zero? (logand (-> s5-0 track-mode) (track-mode no-scale)))
+      (when (not (logtest? (-> s5-0 track-mode) (track-mode no-scale)))
         (let ((a1-9 (-> arg1 scale)))
           (let ((v1-22 (-> arg1 scale))
                 (a0-11 (-> s5-0 scale))
@@ -1325,13 +1337,13 @@
 
 (defbehavior joint-mod-joint-set-handler process ((arg0 cspace) (arg1 transformq))
   (let ((s4-0 (the-as joint-mod (-> arg0 param1))))
-    (if (zero? (logand (-> s4-0 track-mode) (track-mode no-trans)))
+    (if (not (logtest? (-> s4-0 track-mode) (track-mode no-trans)))
         (set! (-> arg1 trans quad) (-> s4-0 trans quad))
         )
-    (if (zero? (logand (-> s4-0 track-mode) (track-mode no-rotate)))
+    (if (not (logtest? (-> s4-0 track-mode) (track-mode no-rotate)))
         (quaternion-copy! (-> arg1 quat) (-> s4-0 quat))
         )
-    (if (zero? (logand (-> s4-0 track-mode) (track-mode no-scale)))
+    (if (not (logtest? (-> s4-0 track-mode) (track-mode no-scale)))
         (set! (-> arg1 scale quad) (-> s4-0 scale quad))
         )
     )
@@ -1431,13 +1443,13 @@
          )
     (init-vf0-vector)
     (let ((s5-0 (the-as joint-mod (-> arg0 param1))))
-      (if (zero? (logand (-> s5-0 track-mode) (track-mode no-trans)))
+      (if (not (logtest? (-> s5-0 track-mode) (track-mode no-trans)))
           (vector+! (-> arg1 trans) (-> arg1 trans) (-> s5-0 trans))
           )
-      (if (zero? (logand (-> s5-0 track-mode) (track-mode no-rotate)))
+      (if (not (logtest? (-> s5-0 track-mode) (track-mode no-rotate)))
           (quaternion-normalize! (quaternion*! (-> arg1 quat) (-> arg1 quat) (-> s5-0 quat)))
           )
-      (when (zero? (logand (-> s5-0 track-mode) (track-mode no-scale)))
+      (when (not (logtest? (-> s5-0 track-mode) (track-mode no-scale)))
         (let ((a1-4 (-> arg1 scale)))
           (let ((v1-11 (-> arg1 scale))
                 (a0-4 (-> s5-0 scale))
@@ -1484,7 +1496,3 @@
   0
   (none)
   )
-
-
-
-

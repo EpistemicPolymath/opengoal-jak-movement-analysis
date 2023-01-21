@@ -338,7 +338,8 @@
   ("plat-eco.o" "plat-eco")
   ("ropebridge.o" "ropebridge")
   ("ticky.o" "ticky")
-  ("hud-classes-pc.o" "hud-classes-pc") ;; added
+  ("mods-settings.o" "mods-settings") ;; added
+  ("put-custom-code-here.o" "put-custom-code-here") ;; added
   ("define-custom-functions-here.o" "define-custom-functions-here") ;; added
   ("put-custom-code-here.o" "put-custom-code-here") ;; added
   ;; keep zoomer stuff loaded
@@ -359,4 +360,3 @@
   ("eichar-flut+0-ag.go" "eichar-flut+0")
 
   )
-  

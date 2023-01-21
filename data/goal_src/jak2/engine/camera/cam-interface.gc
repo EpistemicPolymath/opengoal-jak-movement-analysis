@@ -8,42 +8,18 @@
 ;; DECOMP BEGINS
 
 (defun position-in-front-of-camera! ((arg0 vector) (arg1 float) (arg2 float))
-  (rlet ((acc :class vf)
-         (vf0 :class vf)
-         (vf1 :class vf)
-         (vf2 :class vf)
-         (vf3 :class vf)
-         (vf4 :class vf)
-         )
-    (init-vf0-vector)
-    (vector-float*! arg0 (-> *math-camera* inv-camera-rot vector 2) arg1)
-    (let ((v1-2 arg0))
-      (let ((a1-1 arg0)
-            (a3-3 (-> *math-camera* inv-camera-rot vector 1))
-            (f0-1 arg2)
-            )
-        (.lvf vf2 (&-> a3-3 quad))
-        (.lvf vf1 (&-> a1-1 quad))
-        (let ((a1-2 f0-1))
-          (.mov vf3 a1-2)
-          )
-        )
-      (.add.x.vf vf4 vf0 vf0 :mask #b1000)
-      (.mul.x.vf acc vf2 vf3)
-      (.add.mul.w.vf vf4 vf1 vf0 acc :mask #b111)
-      (.svf (&-> v1-2 quad) vf4)
-      )
-    (vector+! arg0 arg0 (-> *math-camera* trans))
-    arg0
-    )
+  (vector-float*! arg0 (-> *math-camera* inv-camera-rot vector 2) arg1)
+  (vector+float*! arg0 arg0 (-> *math-camera* inv-camera-rot vector 1) arg2)
+  (vector+! arg0 arg0 (-> *math-camera* trans))
+  arg0
   )
 
 (defun position-in-front-of-screen! ((arg0 vector) (arg1 float) (arg2 vector))
   (let ((a2-1 (vector-negate! (new 'stack-no-clear 'vector) (-> *math-camera* inv-camera-rot vector 2)))
         (a1-3 (vector-float*! (new 'stack-no-clear 'vector) (-> *math-camera* inv-camera-rot vector 2) arg1))
         )
-    (vector+! (the-as vector a1-3) (the-as vector a1-3) (-> *math-camera* trans))
-    (reverse-transform-point! arg0 (the-as vector a1-3) a2-1 arg2)
+    (vector+! a1-3 a1-3 (-> *math-camera* trans))
+    (reverse-transform-point! arg0 a1-3 a2-1 arg2)
     )
   arg0
   )
@@ -56,7 +32,7 @@
       )
   )
 
-(defun matrix-world->local ()
+(defun matrix-world->local ((arg0 symbol) (arg1 object))
   "Returns [[*math-camera*]]'s `camera-rot`"
   (-> *math-camera* camera-rot)
   )
@@ -65,9 +41,9 @@
 
 (defun camera-pos ()
   "Returns the `trans` vector from whatever is first determined to exist:
-   - [[*camera-combiner*]]
-   - [[*math-camera*]]
-   - else, [[*camera-dummy-vector*]]"
+- [[*camera-combiner*]]
+- [[*math-camera*]]
+- else, [[*camera-dummy-vector*]]"
   (cond
     (*camera-combiner*
       (-> *camera-combiner* trans)
@@ -107,16 +83,12 @@
     )
   )
 
+;; WARN: Return type mismatch object vs symbol.
 (defbehavior camera-teleport-to-entity process ((arg0 entity-actor))
   (let ((gp-0 (new 'stack 'transformq)))
     (set! (-> gp-0 trans quad) (-> arg0 extra trans quad))
     (quaternion-copy! (-> gp-0 quat) (-> arg0 quat))
     (vector-identity! (-> gp-0 scale))
-    (send-event *camera* 'teleport-to-transformq gp-0)
+    (the-as symbol (send-event *camera* 'teleport-to-transformq gp-0))
     )
-  (none)
   )
-
-
-
-
