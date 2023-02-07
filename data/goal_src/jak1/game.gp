@@ -2056,6 +2056,10 @@
  "mods/mods-settings.gc"
  "mods/define-custom-functions-here.gc"
  "mods/put-custom-code-here.gc"
+  ;; Jak Movement Analysis
+  
+  "mods/jak-movement-analysis.gc" ;; custom funtions file
+  "mods/jak-movement-analysis-defun.gc" ;; defun file
 )
 
 ;; the debug menu is modified to include PC specific options:

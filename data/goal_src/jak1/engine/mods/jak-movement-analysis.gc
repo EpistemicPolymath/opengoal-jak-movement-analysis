@@ -1,0 +1,38 @@
+;;-*-Lisp-*-
+(in-package goal)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Define Custom Variables to use in mods
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define jakXPosition 0.0)
+(define jakYPosition 0.0)
+(define jakZPosition 0.0)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Define Custom Functions to call in mods
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define jakPositionVector (new 'static 'vector :x 0.0 :y 0.0 :z 0.0))
+
+(defun update-jak-position ()
+ ;; Body of function
+  (set! jakXPosition (/ (->(-> *target* root)trans x) 4096.0))
+  (set! jakYPosition (/ (->(-> *target* root)trans y) 4096.0))
+  (set! jakZPosition (/ (->(-> *target* root)trans z) 4096.0))
+  (set! (-> jakPositionVector x) jakXPosition)
+  (set! (-> jakPositionVector y) jakYPosition)
+  (set! (-> jakPositionVector z) jakZPosition)
+  (none)
+) (define jakPositionVector (new 'static 'vector :x 0.0 :y 0.0 :z 0.0))
+
+(defun update-jak-position ()
+ ;; Body of function
+  (set! jakXPosition (/ (->(-> *target* root)trans x) 4096.0))
+  (set! jakYPosition (/ (->(-> *target* root)trans y) 4096.0))
+  (set! jakZPosition (/ (->(-> *target* root)trans z) 4096.0))
+  (set! (-> jakPositionVector x) jakXPosition)
+  (set! (-> jakPositionVector y) jakYPosition)
+  (set! (-> jakPositionVector z) jakZPosition)
+  (none)
+) 
