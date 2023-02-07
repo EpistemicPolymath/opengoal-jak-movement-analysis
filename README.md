@@ -188,6 +188,43 @@ How do I use functions, methods, variables from other files in: data\goal_src\ja
 This is what I need. I am finding a lot of relevant functions, methods, variables, but I cannot interact with them in the test area. 
 
 
+### 2/06/2023
+
+Barg got basck to me with a lot of information so I am going to try and see what I can come up with today trying to decipher all of that information. 
+
+I decided to create my own custom files to work with:
+-   "mods/jak-movement-analysis.gc" ;; custom funtions file
+-   "mods/jak-movement-analysis-defun.gc" ;; defun file
+  
+Then from here I can experiment and keep my code seaprate from other custom code. First there needs to be edits to game.gp so that I can use whatever functions, methods, etc that I will need. 
+
+Barg corrected my mistake last time. I was referencing a Jak 2 function instead of a Jak 1 so I have corrected that now:
+
+- Jak 2: data\goal_src\jak2\engine\camera\cam-debug.gc
+- Jak 1: data\goal_src\jak1\engine\camera\cam-debug.gc
+
+- Jak 2: data\decompiler\config\jak2\all-types.gc
+- Jak 1: data\decompiler\config\all-types.gc
+
+With the proper files collected, we can add them as dependencies to the game.gp:
+
+```
+(goal-src-sequence
+ ;; prefix
+ "engine/"
+ :deps ("$OUT/obj/battlecontroller.o" "$OUT/obj/snow-bunny.o" "$OUT/obj/baby-spider.o" "$OUT/obj/sage-village3.o" "$OUT/obj/sage-finalboss.o" "$OUT/obj/assistant-citadel.o" "$OUT/obj/assistant-lavatube.o" "$OUT/obj/robocave-part.o" "$OUT/obj/driller-lurker.o" "$OUT/obj/training-part.o" "$OUT/obj/rolling-race-ring.o" "$OUT/obj/beach-part.o" "$OUT/obj/sculptor.o" "$OUT/obj/sunken-fish.o" "$OUT/obj/billy.o" "$OUT/obj/sidekick-human.o" "$OUT/obj/flying-lurker.o" "$OUT/obj/target-racer-h.o" "$OUT/obj/firecanyon-obs.o" "$OUT/obj/target-flut.o" "$OUT/obj/hud-classes-pc.o" "$OUT/obj/collide-reaction-racer.o" "$OUT/obj/plant-boss.o" "$OUT/obj/beach-obs.o" "$OUT/obj/sunken-elevator.o" "$OUT/obj/jungle-part.o" "$OUT/obj/sequence-a-village1.o" "$OUT/obj/ticky.o")
+ "mods/mods-settings.gc"
+ "mods/define-custom-functions-here.gc"
+ "mods/put-custom-code-here.gc"
+  ;; Jak Movement Analysis
+  "mods/jak-movement-analysis.gc" ;; custom funtions file
+  "mods/jak-movement-analysis-defun.gc" ;; defun file
+)
+
+```
+
+Assumably I should be able to (mi) and run some of these functions. Everything is working correctly at this point. I ran out of time tonight to start actual experimentation, but I will do that the next time I work on the project. I will go into more detail about the information Barg shared last time as well. 
+
 ### Outside Resources I am reviewing 
 
 
