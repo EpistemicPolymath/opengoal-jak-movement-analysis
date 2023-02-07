@@ -24,7 +24,7 @@
   (set! (-> jakPositionVector y) jakYPosition)
   (set! (-> jakPositionVector z) jakZPosition)
   (none)
-) (define jakPositionVector (new 'static 'vector :x 0.0 :y 0.0 :z 0.0))
+) 
 
 (defun update-jak-position ()
  ;; Body of function

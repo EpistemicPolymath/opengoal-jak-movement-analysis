@@ -2057,8 +2057,6 @@
  "mods/define-custom-functions-here.gc"
  "mods/put-custom-code-here.gc"
   ;; Jak Movement Analysis
-  "camera/cam-debug.gc" ;; target-spline function for Jak 1 named TODO-RENAME-23
-  "target/logic-target.gc" ;; All logic related to the target Jak. There are a lot of vector methods and drawings here that might be reuseable
   "mods/jak-movement-analysis.gc" ;; custom funtions file
   "mods/jak-movement-analysis-defun.gc" ;; defun file
 )
