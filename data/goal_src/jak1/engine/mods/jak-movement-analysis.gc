@@ -25,14 +25,3 @@
   (set! (-> jakPositionVector z) jakZPosition)
   (none)
 ) 
-
-(defun update-jak-position ()
- ;; Body of function
-  (set! jakXPosition (/ (->(-> *target* root)trans x) 4096.0))
-  (set! jakYPosition (/ (->(-> *target* root)trans y) 4096.0))
-  (set! jakZPosition (/ (->(-> *target* root)trans z) 4096.0))
-  (set! (-> jakPositionVector x) jakXPosition)
-  (set! (-> jakPositionVector y) jakYPosition)
-  (set! (-> jakPositionVector z) jakZPosition)
-  (none)
-) 
